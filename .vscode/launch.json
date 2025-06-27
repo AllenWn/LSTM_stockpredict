@@ -1,0 +1,19 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Python: Train",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/scripts/train.py",
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Python: Predict",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/scripts/predict.py",
+      "console": "integratedTerminal"
+    }
+  ]
+}
