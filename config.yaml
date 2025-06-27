@@ -9,8 +9,7 @@ num_layers: 2
 lr: 0.001
 epochs: 128
 future_hours: 8
-train_data_path: data/data_train/AAPL_1d_2y.csv
-predict_data_path: data/data_predict/AAPL_1d_2y.csv
+data_path: data/data_train/AAPL_1d_2y.csv
 n_recnet: 500
 
 features:

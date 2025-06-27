@@ -16,7 +16,7 @@ freq_map   = {'1h':'H', '1d':'D'}
 
 
 # 2）拿最新数据并构造序列
-df_raw = pd.read_csv(cfg['predict_data_path'], index_col=0, parse_dates=True)
+df_raw = pd.read_csv(cfg['data_path'], index_col=0, parse_dates=True)
 
 if cfg.get('n_recent') is not None:
     df_raw = df_raw.tail(cfg['n_recent'])
