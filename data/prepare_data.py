@@ -1,7 +1,7 @@
 import yfinance as yf
 import pandas as pd
 import numpy as np
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
 
 
 
@@ -28,7 +28,8 @@ def fetch_and_scale(ticker, interval, period, features=None):
 
     scalers = {}
     for col in features:
-        scaler = MinMaxScaler()
+        #scaler = MinMaxScaler()
+        scaler = StandardScaler()
         df[col] = scaler.fit_transform(df[[col]])
         scalers[col] = scaler
 
@@ -54,7 +55,8 @@ def load_and_scale(file_path : str, features=None):
 
     scalers = {}
     for col in features:
-        scaler = MinMaxScaler()
+        #scaler = MinMaxScaler()
+        scaler = StandardScaler()
         df[col] = scaler.fit_transform(df[[col]])
         scalers[col] = scaler
 

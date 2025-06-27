@@ -55,4 +55,4 @@ plot_loss(train_losses)
 # 8）保存模型权重 & 保存 scaler
 torch.save(model.state_dict(), 'outputs/lstm.pth')
 import joblib
-joblib.dump(scaler_c, ' scaler/scaler_close.gz')
+joblib.dump(scaler_c, 'scaler/scaler_close.gz')
