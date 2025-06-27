@@ -46,9 +46,12 @@ def fetch_and_scale(ticker, interval, period, features=None):
         scaler_volume: fitted MinMaxScaler for 'Volume'
 """
 
-def load_and_scale(file_path : str, features=None):
+def load_and_scale(file_path : str, features=None, n_recent : int = None):
     df = pd.read_csv(file_path, index_col=0, parse_dates=True)
 
+    if n_recent is not None:
+        df = df.tail(n_recent)
+        
     if features is None:
         features = ['Close', 'Volume']
     df = df[features].dropna()

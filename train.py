@@ -13,12 +13,12 @@ from utils.viz import plot_loss
 cfg = yaml.safe_load(open('config.yaml'))
 features   = cfg['features']      # e.g. ['Close','Volume','High','Low']
 target_col = cfg['target_col']    # e.g. 0 对应 'Close'
-csv_path   = cfg.get('data_path', None)
+csv_path   = cfg.get('train_data_path', None)
+n = cfg['n_recent']
 
-df, scalers = load_and_scale(csv_path, features = features)
+df, scalers = load_and_scale(csv_path, features = features, n_recent = n)
 
 scaler_target = scalers[features[target_col]]
-
 
 X, y = make_sequences(df.values,
                           seq_length=cfg['seq_length'],
@@ -55,10 +55,10 @@ for epoch in range(cfg['epochs']):
     optimizer.step()                    # 更新
         
     train_losses.append(loss.item())
-    if (epoch+1) % cfg['print_every'] == 0:
+    if (epoch+1) % 10 == 0:
         print(f"Epoch {epoch+1}/{cfg['epochs']}, Loss={loss.item():.6f}")
     
 plot_loss(train_losses)
 
-torch.save(model.state_dict(), 'outputs/lstm.pth')
-joblib.dump(scaler_target, 'scaler/scaler_close.gz')
+torch.save(model.state_dict(), 'weights_outputs/lstm.pth')
+joblib.dump(scalers, 'scaler/scaler.gz')

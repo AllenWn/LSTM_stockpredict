@@ -1,6 +1,6 @@
 ticker: AAPL
-interval: 1h
-period: 3mo
+interval: 1d #1h
+period: 2y #3mo
 seq_length: 24
 test_size: 0.2
 random_seed: 42
@@ -9,7 +9,8 @@ num_layers: 2
 lr: 0.001
 epochs: 128
 future_hours: 8
-data_path: data/data/AAPL_1d_2y.csv
+train_data_path: data/data_train/AAPL_1d_2y.csv
+n_recnet: 1000;
 
 features:
   - Close
