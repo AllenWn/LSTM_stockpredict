@@ -1,0 +1,1 @@
+python fetch_data.py --ticker AAPL --interval 1h --period 1y --output data/AAPL_1h_1y.csv
