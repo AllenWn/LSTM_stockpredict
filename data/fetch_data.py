@@ -21,6 +21,8 @@ def fetch_and_save(ticker: str, interval: str, period: str, output_file: str):
     if df.empty:
         print("No data fetched. Please check ticker/interval/period.")
         return
+    if isinstance(df.columns, pd.MultiIndex):
+        df.columns = df.columns.get_level_values(0)
     os.makedirs(os.path.dirname(output_file), exist_ok=True)
     df.to_csv(output_file)
     print(f"Fetched {len(df)} rows. Data saved to {output_file}.")

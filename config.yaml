@@ -7,3 +7,12 @@ num_layers: 2
 lr: 0.001
 epochs: 128
 future_hours: 8
+data_path: data/data/AAPL_1d_2y.csv
+
+features:
+  - Close
+  - Volume
+  - High
+  - Low
+
+target_col: 0 # close
