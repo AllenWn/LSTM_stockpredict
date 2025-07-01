@@ -25,28 +25,28 @@ future_hours = cfg['future_hours']
 target_name  = cfg['features'][target_col]
 
 # 2) 准备日志文件
-# log_dir = Path('logs')
-# log_dir.mkdir(exist_ok=True)
-# timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-# # log_path = log_dir / f"run_{timestamp}.txt"
-# log_path = log_dir / f"run_001.txt"
+log_dir = Path('logs')
+log_dir.mkdir(exist_ok=True)
+timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+# log_path = log_dir / f"run_{timestamp}.txt"
+log_path = log_dir / f"run_001.txt"
 
-# # 3) 将重要参数写入日志
-# with open(log_path, 'w') as log_file:
-#     log_file.write(f"Experiment Start: {timestamp}\n")
-#     log_file.write("Configuration Parameters:\n")
-#     for key in ['features', 'target_col', 'seq_length',
-#                 'hidden_size', 'num_layers', 'lr',
-#                 'epochs', 'test_size', 'n_recent']:
-#         value = cfg.get(key, 'N/A')
-#         log_file.write(f"{key}: {value}\n")
+# 3) 将重要参数写入日志
+with open(log_path, 'w') as log_file:
+    log_file.write(f"Experiment Start: {timestamp}\n")
+    log_file.write("Configuration Parameters:\n")
+    for key in ['features', 'target_col', 'seq_length',
+                'hidden_size', 'num_layers', 'lr',
+                'epochs', 'test_size', 'n_recent']:
+        value = cfg.get(key, 'N/A')
+        log_file.write(f"{key}: {value}\n")
 
-#  train()
-# with open(log_path, 'a') as log_file:
-#     log_file.write("\n=== Begin Training ===\n")
-#     with redirect_stdout(log_file): 
-#         train.main()
-#     log_file.write("=== End Training ===\n\n")
+
+with open(log_path, 'a') as log_file:
+    log_file.write("\n=== Begin Training ===\n")
+    with redirect_stdout(log_file): 
+        train.main()
+
 
 
 # test & evaluate
@@ -67,22 +67,29 @@ timestamps    = []
 preds_first   = []
 actuals_first = []
 
-for start in range(max_start):
-        # 调用 predict.py 中的 main，返回预测值列表
-        print(start)
-        preds = predict.main(
-            start_index=start,
-            plot=None,
-            return_preds=True
-        )
+with open(log_path, 'a') as log_file:
+    log_file.write("\n\n=== Begin Evaluaton ===\n")
+    log_file.write("\nTimestamps                Predict  Actual\n")
 
-        pred1 = preds[0]
-        ts    = df.index[start + seq_len]
-        actual = df.iloc[start + seq_len][target_name]
+    for start in range(max_start):
+            log_file.write("\n")
+            log_file.write("Inference Epoch " + str(start) + "\n")
+            # 调用 predict.py 中的 main，返回预测值列表
 
-        timestamps.append(ts)
-        preds_first.append(pred1)
-        actuals_first.append(actual)
+            with redirect_stdout(log_file): 
+                preds = predict.main(
+                    start_index=start,
+                    plot=None,
+                    return_preds=True
+                )
+
+            pred1 = preds[0]
+            ts    = df.index[start + seq_len]
+            actual = df.iloc[start + seq_len][target_name]
+
+            timestamps.append(ts)
+            preds_first.append(pred1)
+            actuals_first.append(actual)
 
 df_first = pd.DataFrame({
     'timestamp':    timestamps,
@@ -90,6 +97,23 @@ df_first = pd.DataFrame({
     'actual':       actuals_first
 }).set_index('timestamp')
 
+y_true = df_first['actual'].values
+y_pred = df_first['predicted'].values
+
+# 计算指标
+mse  = mean_squared_error(y_true, y_pred)
+rmse = np.sqrt(mse)
+mae  = mean_absolute_error(y_true, y_pred)
+
+
+with open(log_path, 'a') as log_file:
+    log_file.write(f"\n\n=== First-step Forecast vs Actual ===\n")
+    log_file.write(df_first.to_string(index=True))
+
+    log_file.write("\n\n=== Testing Loss ===\n")
+    log_file.write(f"MAE:  {mae:.4f}\n")
+    log_file.write(f"MSE:  {mse:.4f}\n")
+    log_file.write(f"RMSE: {rmse:.4f}\n\n")
 
 plt.figure(figsize=(12, 6))
 plt.plot(df_first.index, df_first['actual'], label='Actual')
