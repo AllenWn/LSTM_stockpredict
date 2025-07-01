@@ -7,8 +7,7 @@ import pandas as pd
 from data.prepare_data import load_and_scale, make_sequences
 from models.lstm_model import LSTMModel
 from utils.viz import plot_prediction
-import pandas_market_calendars as mcal
-nyse = mcal.get_calendar('XNYS')
+
 
 def main(start_index=None):
 
@@ -49,7 +48,7 @@ def main(start_index=None):
     time_start = input_data.index[-1]
 
 
-    print(input_data)
+    #print(input_data)
 
 
     # 确保够长
@@ -116,21 +115,33 @@ def main(start_index=None):
     #     freq=freq
     # )[1:]
 
-    schedule = nyse.schedule(
-        start_date=time_start,
-        end_date=time_start + pd.Timedelta(days=60)  
-    )
-    future_index = schedule.index[1 : cfg['future_hours'] + 1]
+    # schedule = nyse.schedule(
+    #     start_date=time_start,
+    #     end_date=time_start + pd.Timedelta(days=60)  
+    # )
+    # future_index = schedule.index[1 : cfg['future_hours'] + 1]
 
+    end_pos = df_raw.index.get_loc(input_data.index[-1])
+    future_index = df_raw.index[end_pos+1 : end_pos+1 + cfg['future_hours']]
+
+    actuals = []
+    for t in future_index:
+        if t in df_raw.index:
+            actuals.append(df_raw.loc[t, features[target_col]])
+        else:
+            actuals.append(np.nan)
+
+    # 打印未来预测值
+    for t,p,a in zip(future_index, preds, actuals):
+        print(f"{t}: {p:.2f}, {a:.2f}")
+
+    # 画图
     plot_prediction(
         future_index,
-        preds, preds,
+        actuals, preds,
         title=f"Next {cfg['future_hours']} {cfg['interval']} {features[target_col]}"
     )
 
-    # 8) 打印未来预测值
-    for t,v in zip(future_index, preds):
-        print(f"{t}: {v:.2f}")
 
 
 if __name__ == "__main__":

@@ -1,4 +1,4 @@
-Experiment Start: 20250701_100312
+Experiment Start: 20250701_133954
 Configuration Parameters:
 features: ['Close', 'Volume', 'High', 'Low']
 target_col: 0
@@ -9,19 +9,3 @@ lr: 0.001
 epochs: 128
 test_size: 0.2
 n_recent: 500
-
-=== Begin Training ===
-Epoch 10/128, Loss=0.584890
-Epoch 20/128, Loss=0.136483
-Epoch 30/128, Loss=0.082896
-Epoch 40/128, Loss=0.063441
-Epoch 50/128, Loss=0.053241
-Epoch 60/128, Loss=0.046356
-Epoch 70/128, Loss=0.039884
-Epoch 80/128, Loss=0.035031
-Epoch 90/128, Loss=0.031550
-Epoch 100/128, Loss=0.029427
-Epoch 110/128, Loss=0.027947
-Epoch 120/128, Loss=0.026731
-=== End Training ===
-
