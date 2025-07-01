@@ -10,6 +10,7 @@ from datetime import datetime
 from data.prepare_data import make_sequences
 from models.lstm_model import LSTMModel
 from contextlib import redirect_stdout
+import matplotlib.pyplot as plt
 import train
 import predict
 
@@ -21,6 +22,7 @@ features     = cfg['features']
 target_col   = cfg['target_col']
 seq_len      = cfg['seq_length']
 future_hours = cfg['future_hours']
+target_name  = cfg['features'][target_col]
 
 # 2) 准备日志文件
 # log_dir = Path('logs')
@@ -54,20 +56,52 @@ df = df[features].dropna()
 timestamps = df.index
 actuals = df[features[target_col]].values
 
-print (actuals)
+#print (actuals)
 
 results = []
 max_start = len(df) - seq_len - future_hours + 1
 
 print (max_start)
-max_start = 10
+#max_start = 10
+timestamps    = []
+preds_first   = []
+actuals_first = []
 
 for start in range(max_start):
         # 调用 predict.py 中的 main，返回预测值列表
         print(start)
         preds = predict.main(
             start_index=start,
+            plot=None,
+            return_preds=True
         )
+
+        pred1 = preds[0]
+        ts    = df.index[start + seq_len]
+        actual = df.iloc[start + seq_len][target_name]
+
+        timestamps.append(ts)
+        preds_first.append(pred1)
+        actuals_first.append(actual)
+
+df_first = pd.DataFrame({
+    'timestamp':    timestamps,
+    'predicted':    preds_first,
+    'actual':       actuals_first
+}).set_index('timestamp')
+
+
+plt.figure(figsize=(12, 6))
+plt.plot(df_first.index, df_first['actual'], label='Actual')
+plt.plot(df_first.index, df_first['predicted'],
+             linestyle='--', marker='o', label='First-step Pred')
+plt.title(f'First-step Forecast vs Actual ({target_name})')
+plt.xlabel('Time')
+plt.ylabel(target_name)
+plt.legend()
+plt.tight_layout()
+plt.show()
+
         # 对齐真实值：位置从 start+seq_len 到 start+seq_len+future_hours-1
         # for i, p in enumerate(preds):
         #     idx = start + seq_len + i

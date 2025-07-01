@@ -9,7 +9,8 @@ from models.lstm_model import LSTMModel
 from utils.viz import plot_prediction
 
 
-def main(start_index=None):
+def main(start_index=None, return_preds=None,
+            plot=None):
 
     # 1）加载配置 & 模型 & scaler
     cfg = yaml.safe_load(open('config.yaml'))
@@ -136,12 +137,15 @@ def main(start_index=None):
         print(f"{t}: {p:.2f}, {a:.2f}")
 
     # 画图
-    plot_prediction(
-        future_index,
-        actuals, preds,
-        title=f"Next {cfg['future_hours']} {cfg['interval']} {features[target_col]}"
-    )
+    if (plot == True):
+        plot_prediction(
+            future_index,
+            actuals, preds,
+            title=f"Next {cfg['future_hours']} {cfg['interval']} {features[target_col]}"
+        )
 
+    if (return_preds == True) :
+        return preds;
 
 
 if __name__ == "__main__":
